@@ -1,11 +1,9 @@
 package com.oocode;
 
 import com.teamoptimization.*;
-import com.teamoptimization.SlugSwaps.Timeout;
-
 import java.math.BigDecimal;
 
-public class BetPlacer implements ISlugSwapApiAdapter {
+public class BetPlacer {
 	
 	ISlugRacingOddsApiAdapter slugRacingOddsApi;
 	
@@ -13,7 +11,7 @@ public class BetPlacer implements ISlugSwapApiAdapter {
 	
 	public BetPlacer( ) {
 		this.slugRacingOddsApi = new SlugRacingOddsApiAdapter();
-		this.slugSwapApi = this;
+		this.slugSwapApi = new SlugSwapApiAdapter();
 	}
 	
 	public BetPlacer(ISlugRacingOddsApiAdapter slugRacingOddsApi, ISlugSwapApiAdapter slugSwapApi) {
@@ -47,29 +45,5 @@ public class BetPlacer implements ISlugSwapApiAdapter {
             	this.slugRacingOddsApi.agreeExpensiveOdds(b);
             }
         }
-    }
-	
-	/* (non-Javadoc)
-	 * @see com.oocode.ISlugSwapApiAdapter#acceptCheapOdds(java.lang.String)
-	 */
-	@Override
-	public void acceptCheapOdds(String p2p) throws Timeout {
-		SlugSwapsApi.accept(p2p);
-	}
-
-
-	/* (non-Javadoc)
-	 * @see com.oocode.ISlugSwapApiAdapter#getP2PQuote(int, java.lang.String, java.math.BigDecimal)
-	 */
-	@Override
-	public String getP2PQuote(int slugId, String raceName, BigDecimal targetOdds) {
-		String result;
-		Race race = SlugSwapsApi.forRace(raceName);
-        if (race == null) {
-            result = null;
-        } else {
-            result = race.quote(slugId, targetOdds);
-        }
-		return result;
-	}
+    }	
 }
