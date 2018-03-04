@@ -5,14 +5,14 @@ import com.teamoptimization.SlugSwaps.Timeout;
 
 import java.math.BigDecimal;
 
-public class BetPlacer implements ISlugRacingOddsApiAdapter, ISlugSwapApiAdapter {
+public class BetPlacer implements ISlugSwapApiAdapter {
 	
 	ISlugRacingOddsApiAdapter slugRacingOddsApi;
 	
 	ISlugSwapApiAdapter slugSwapApi;
 	
 	public BetPlacer( ) {
-		this.slugRacingOddsApi = this;
+		this.slugRacingOddsApi = new SlugRacingOddsApiAdapter();
 		this.slugSwapApi = this;
 	}
 	
@@ -48,23 +48,6 @@ public class BetPlacer implements ISlugRacingOddsApiAdapter, ISlugSwapApiAdapter
             }
         }
     }
-
-
-	/* (non-Javadoc)
-	 * @see com.oocode.ISlugRacingOddsApiAdapter#agreeExpensiveOdds(com.teamoptimization.Quote)
-	 */
-	@Override
-	public void agreeExpensiveOdds(Quote b) {
-		SlugRacingOddsApi.agree(b.uid);
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.oocode.ISlugRacingOddsApiAdapter#getExpensiveOdds(int, java.lang.String)
-	 */
-	@Override
-	public Quote getExpensiveOdds(int slugId, String raceName) {
-		return SlugRacingOddsApi.on(slugId, raceName);
-	}
 	
 	/* (non-Javadoc)
 	 * @see com.oocode.ISlugSwapApiAdapter#acceptCheapOdds(java.lang.String)
