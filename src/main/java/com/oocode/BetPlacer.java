@@ -14,7 +14,12 @@ public class BetPlacer implements ISlugRacingOddsApiAdapter, ISlugSwapApiAdapter
 	public BetPlacer( ) {
 		this.slugRacingOddsApi = this;
 		this.slugSwapApi = this;
-	}	
+	}
+	
+	public BetPlacer(ISlugRacingOddsApiAdapter slugRacingOddsApi, ISlugSwapApiAdapter slugSwapApi) {
+		this.slugRacingOddsApi = slugRacingOddsApi;
+		this.slugSwapApi = slugSwapApi;
+	}
 
     public static void main(String[] args) throws Exception {
         /* Results usually look like a bit like one of the following:
