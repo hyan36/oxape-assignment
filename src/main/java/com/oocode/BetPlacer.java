@@ -3,7 +3,7 @@ package com.oocode;
 import com.teamoptimization.*;
 import java.math.BigDecimal;
 
-public class BetPlacer implements ITimer {
+public class BetPlacer {
 	
 	ISlugRacingOddsApiAdapter slugRacingOddsApi;
 	
@@ -16,7 +16,7 @@ public class BetPlacer implements ITimer {
 	public BetPlacer( ) {
 		this.slugRacingOddsApi = new SlugRacingOddsApiAdapter();
 		this.slugSwapApi = new SlugSwapApiAdapter();
-		this.timer = this;
+		this.timer = new Timer();
 	}
 	
 	public BetPlacer(ISlugRacingOddsApiAdapter slugRacingOddsApi, ISlugSwapApiAdapter slugSwapApi, ITimer timer) {
@@ -68,15 +68,4 @@ public class BetPlacer implements ITimer {
 		} catch (SlugSwaps.Timeout timeout) {
 		}
 	}
-
-	@Override
-	public void startTimer() {
-		startTime = System.currentTimeMillis();
-		
-	}
-
-	@Override
-	public Boolean TimeOut(int millis) {
-		return startTime + millis < System.currentTimeMillis();
-	}	
 }
