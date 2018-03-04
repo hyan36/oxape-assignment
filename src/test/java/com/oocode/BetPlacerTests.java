@@ -28,19 +28,20 @@ public class BetPlacerTests {
 		acceptedId = null;
 		expensiveOdds = 100;
 		betPlacer = new BetPlacer() {
-			public String getQuote(int slugId, String raceName, BigDecimal targetOdds) {
+			@Override
+			public String getP2PQuote(int slugId, String raceName, BigDecimal targetOdds) {
 				return acceptedId;
 			}
-
-			public void agree(Quote b) {
+			@Override
+			public void agreeExpensiveOdds(Quote b) {
 				agreed = true;
 			}
-
-			public Quote getOdds(int slugId, String raceName) {
+			@Override
+			public Quote getExpensiveOdds(int slugId, String raceName) {
 				return new Quote(new BigDecimal(expensiveOdds), raceName);
 			}
-
-			public void accept(String p2p) {
+			@Override
+			public void acceptCheapOdds(String p2p) {
 				accepted = true;
 			}
 		};

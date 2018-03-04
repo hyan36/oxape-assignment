@@ -20,36 +20,36 @@ public class BetPlacer {
 
     public void placeBet(int slugId, String raceName, BigDecimal targetOdds) {
         String result;
-        result = getQuote(slugId, raceName, targetOdds);
+        result = getP2PQuote(slugId, raceName, targetOdds);
         String p2p = result;
-        Quote b = getOdds(slugId, raceName);
+        Quote b = getExpensiveOdds(slugId, raceName);
         if (p2p != null && targetOdds.compareTo(b.odds) >= 0) {
             try {
-                accept(p2p);
+                acceptCheapOdds(p2p);
             } catch (SlugSwaps.Timeout timeout) {
             }
         } else {
             if (b.odds.compareTo(targetOdds) >= 0) {
-                agree(b);
+                agreeExpensiveOdds(b);
             }
         }
     }
 
 
-	public void agree(Quote b) {
+	public void agreeExpensiveOdds(Quote b) {
 		SlugRacingOddsApi.agree(b.uid);
 	}
 	
-	public Quote getOdds(int slugId, String raceName) {
+	public Quote getExpensiveOdds(int slugId, String raceName) {
 		return SlugRacingOddsApi.on(slugId, raceName);
 	}
 	
-	public void accept(String p2p) throws Timeout {
+	public void acceptCheapOdds(String p2p) throws Timeout {
 		SlugSwapsApi.accept(p2p);
 	}
 
 
-	public String getQuote(int slugId, String raceName, BigDecimal targetOdds) {
+	public String getP2PQuote(int slugId, String raceName, BigDecimal targetOdds) {
 		String result;
 		Race race = SlugSwapsApi.forRace(raceName);
         if (race == null) {
