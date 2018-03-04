@@ -19,10 +19,10 @@ public class BetPlacer implements ITimer {
 		this.timer = this;
 	}
 	
-	public BetPlacer(ISlugRacingOddsApiAdapter slugRacingOddsApi, ISlugSwapApiAdapter slugSwapApi) {
+	public BetPlacer(ISlugRacingOddsApiAdapter slugRacingOddsApi, ISlugSwapApiAdapter slugSwapApi, ITimer timer) {
 		this.slugRacingOddsApi = slugRacingOddsApi;
 		this.slugSwapApi = slugSwapApi;
-		this.timer = this;
+		this.timer = timer;
 	}
 
     public static void main(String[] args) throws Exception {

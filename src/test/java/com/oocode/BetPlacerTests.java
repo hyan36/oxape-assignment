@@ -24,11 +24,14 @@ public class BetPlacerTests {
 	protected ISlugRacingOddsApiAdapter slugRacingOddsAdapter = mock(ISlugRacingOddsApiAdapter.class);
 	
 	protected ISlugSwapApiAdapter slugSwapApiAdapter = mock(ISlugSwapApiAdapter.class);
+	
+	protected ITimer timer = mock(ITimer.class);
 
 	@Before
 	public void initialize() {
 		when(slugRacingOddsAdapter.getExpensiveOdds(002, "something")).thenReturn(new Quote(new BigDecimal(100), "something"));		
-		betPlacer = new BetPlacer(this.slugRacingOddsAdapter, this.slugSwapApiAdapter);
+		when(timer.TimeOut(1000)).thenReturn(false);
+		betPlacer = new BetPlacer(this.slugRacingOddsAdapter, this.slugSwapApiAdapter, timer);
 	}
 
 	@Test
@@ -88,6 +91,20 @@ public class BetPlacerTests {
 		when(slugRacingOddsAdapter.getExpensiveOdds(002, "something")).thenReturn(quote);
 		
 		betPlacer.placeBet(002, "something", new BigDecimal(102));
+		verify(slugSwapApiAdapter, never()).acceptCheapOdds(acceptedId);
+		verify(slugRacingOddsAdapter, never()).agreeExpensiveOdds(quote);
+	}
+	
+	@Test
+	public void testTimeOut() throws Exception {
+		acceptedId = "somethingrandomid";
+		when(slugSwapApiAdapter.getP2PQuote(002, "something", new BigDecimal(102))).thenReturn(acceptedId);	
+		
+		expensiveOdds = 102;
+		Quote quote = new Quote(new BigDecimal(expensiveOdds), "something");
+		when(slugRacingOddsAdapter.getExpensiveOdds(002, "something")).thenReturn(quote);
+		
+		when(timer.TimeOut(1000)).thenReturn(true);		
 		verify(slugSwapApiAdapter, never()).acceptCheapOdds(acceptedId);
 		verify(slugRacingOddsAdapter, never()).agreeExpensiveOdds(quote);
 	}
