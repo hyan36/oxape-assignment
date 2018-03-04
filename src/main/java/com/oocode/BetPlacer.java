@@ -1,10 +1,12 @@
 package com.oocode;
 
 import com.teamoptimization.*;
+import com.teamoptimization.SlugSwaps.Timeout;
 
 import java.math.BigDecimal;
 
 public class BetPlacer {
+
     public static void main(String[] args) throws Exception {
         /* Results usually look like a bit like one of the following:
            Time out on SlugSwaps
@@ -18,23 +20,43 @@ public class BetPlacer {
 
     public void placeBet(int slugId, String raceName, BigDecimal targetOdds) {
         String result;
-        Race race = SlugSwapsApi.forRace(raceName);
+        result = getQuote(slugId, raceName, targetOdds);
+        String p2p = result;
+        Quote b = getOdds(slugId, raceName);
+        if (p2p != null && targetOdds.compareTo(b.odds) >= 0) {
+            try {
+                accept(p2p);
+            } catch (SlugSwaps.Timeout timeout) {
+            }
+        } else {
+            if (b.odds.compareTo(targetOdds) >= 0) {
+                agree(b);
+            }
+        }
+    }
+
+
+	public void agree(Quote b) {
+		SlugRacingOddsApi.agree(b.uid);
+	}
+	
+	public Quote getOdds(int slugId, String raceName) {
+		return SlugRacingOddsApi.on(slugId, raceName);
+	}
+	
+	public void accept(String p2p) throws Timeout {
+		SlugSwapsApi.accept(p2p);
+	}
+
+
+	public String getQuote(int slugId, String raceName, BigDecimal targetOdds) {
+		String result;
+		Race race = SlugSwapsApi.forRace(raceName);
         if (race == null) {
             result = null;
         } else {
             result = race.quote(slugId, targetOdds);
         }
-        String p2p = result;
-        Quote b = SlugRacingOddsApi.on(slugId, raceName);
-        if (p2p != null && targetOdds.compareTo(b.odds) >= 0) {
-            try {
-                SlugSwapsApi.accept(p2p);
-            } catch (SlugSwaps.Timeout timeout) {
-            }
-        } else {
-            if (b.odds.compareTo(targetOdds) >= 0) {
-                SlugRacingOddsApi.agree(b.uid);
-            }
-        }
-    }
+		return result;
+	}
 }
