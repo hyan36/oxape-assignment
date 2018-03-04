@@ -5,7 +5,16 @@ import com.teamoptimization.SlugSwaps.Timeout;
 
 import java.math.BigDecimal;
 
-public class BetPlacer {
+public class BetPlacer implements ISlugRacingOddsApiAdapter, ISlugSwapApiAdapter {
+	
+	ISlugRacingOddsApiAdapter slugRacingOddsApi;
+	
+	ISlugSwapApiAdapter slugSwapApi;
+	
+	public BetPlacer( ) {
+		this.slugRacingOddsApi = this;
+		this.slugSwapApi = this;
+	}	
 
     public static void main(String[] args) throws Exception {
         /* Results usually look like a bit like one of the following:
@@ -20,35 +29,51 @@ public class BetPlacer {
 
     public void placeBet(int slugId, String raceName, BigDecimal targetOdds) {
         String result;
-        result = getP2PQuote(slugId, raceName, targetOdds);
+        result = this.slugSwapApi.getP2PQuote(slugId, raceName, targetOdds);
         String p2p = result;
-        Quote b = getExpensiveOdds(slugId, raceName);
+        Quote b = this.slugRacingOddsApi.getExpensiveOdds(slugId, raceName);
         if (p2p != null && targetOdds.compareTo(b.odds) >= 0) {
             try {
-                acceptCheapOdds(p2p);
+            	this.slugSwapApi.acceptCheapOdds(p2p);
             } catch (SlugSwaps.Timeout timeout) {
             }
         } else {
             if (b.odds.compareTo(targetOdds) >= 0) {
-                agreeExpensiveOdds(b);
+            	this.slugRacingOddsApi.agreeExpensiveOdds(b);
             }
         }
     }
 
 
+	/* (non-Javadoc)
+	 * @see com.oocode.ISlugRacingOddsApiAdapter#agreeExpensiveOdds(com.teamoptimization.Quote)
+	 */
+	@Override
 	public void agreeExpensiveOdds(Quote b) {
 		SlugRacingOddsApi.agree(b.uid);
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.oocode.ISlugRacingOddsApiAdapter#getExpensiveOdds(int, java.lang.String)
+	 */
+	@Override
 	public Quote getExpensiveOdds(int slugId, String raceName) {
 		return SlugRacingOddsApi.on(slugId, raceName);
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.oocode.ISlugSwapApiAdapter#acceptCheapOdds(java.lang.String)
+	 */
+	@Override
 	public void acceptCheapOdds(String p2p) throws Timeout {
 		SlugSwapsApi.accept(p2p);
 	}
 
 
+	/* (non-Javadoc)
+	 * @see com.oocode.ISlugSwapApiAdapter#getP2PQuote(int, java.lang.String, java.math.BigDecimal)
+	 */
+	@Override
 	public String getP2PQuote(int slugId, String raceName, BigDecimal targetOdds) {
 		String result;
 		Race race = SlugSwapsApi.forRace(raceName);
