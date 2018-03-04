@@ -15,6 +15,11 @@ public class SlugSwapApiAdapter implements ISlugSwapApiAdapter {
 	public void acceptCheapOdds(String p2p) throws Timeout {
 		SlugSwapsApi.accept(p2p);
 	}
+	
+
+	public Race getRace(String raceName) {
+		return SlugSwapsApi.forRace(raceName);
+	}
 
 
 	/* (non-Javadoc)
@@ -23,7 +28,7 @@ public class SlugSwapApiAdapter implements ISlugSwapApiAdapter {
 	@Override
 	public String getP2PQuote(int slugId, String raceName, BigDecimal targetOdds) {
 		String result;
-		Race race = SlugSwapsApi.forRace(raceName);
+		Race race = getRace(raceName);
         if (race == null) {
             result = null;
         } else {
@@ -31,5 +36,7 @@ public class SlugSwapApiAdapter implements ISlugSwapApiAdapter {
         }
 		return result;
 	}
+
+
 
 }
