@@ -3,20 +3,26 @@ package com.oocode;
 import com.teamoptimization.*;
 import java.math.BigDecimal;
 
-public class BetPlacer {
+public class BetPlacer implements ITimer {
 	
 	ISlugRacingOddsApiAdapter slugRacingOddsApi;
 	
 	ISlugSwapApiAdapter slugSwapApi;
 	
+	ITimer timer;
+	
+	long startTime;
+	
 	public BetPlacer( ) {
 		this.slugRacingOddsApi = new SlugRacingOddsApiAdapter();
 		this.slugSwapApi = new SlugSwapApiAdapter();
+		this.timer = this;
 	}
 	
 	public BetPlacer(ISlugRacingOddsApiAdapter slugRacingOddsApi, ISlugSwapApiAdapter slugSwapApi) {
 		this.slugRacingOddsApi = slugRacingOddsApi;
 		this.slugSwapApi = slugSwapApi;
+		this.timer = this;
 	}
 
     public static void main(String[] args) throws Exception {
@@ -32,10 +38,14 @@ public class BetPlacer {
 
     public void placeBet(int slugId, String raceName, BigDecimal targetOdds) {
         String result;
+        timer.startTimer();
         result = this.slugSwapApi.getP2PQuote(slugId, raceName, targetOdds);
         String p2p = result;
-        Quote b = this.slugRacingOddsApi.getExpensiveOdds(slugId, raceName);
-        acceptOdds(targetOdds, p2p, b);
+        if (!timer.TimeOut(1000)) {
+        	 Quote b = this.slugRacingOddsApi.getExpensiveOdds(slugId, raceName);
+             acceptOdds(targetOdds, p2p, b);
+        }
+       
     }
 
 	protected void acceptOdds(BigDecimal targetOdds, String p2p, Quote b) {
@@ -57,5 +67,16 @@ public class BetPlacer {
 			this.slugSwapApi.acceptCheapOdds(p2p);
 		} catch (SlugSwaps.Timeout timeout) {
 		}
+	}
+
+	@Override
+	public void startTimer() {
+		startTime = System.currentTimeMillis();
+		
+	}
+
+	@Override
+	public Boolean TimeOut(int millis) {
+		return startTime + millis < System.currentTimeMillis();
 	}	
 }
