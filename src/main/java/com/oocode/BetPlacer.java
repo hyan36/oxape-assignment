@@ -50,7 +50,7 @@ public class BetPlacer {
 
 	protected void acceptOdds(BigDecimal targetOdds, String p2p, Quote b) {
 		if (p2p != null && targetOdds.compareTo(b.odds) >= 0) {
-            acceptCheapOdds(p2p);
+            acceptCheapOdds(p2p, b);
         } else {
             acceptExpensiveOdds(targetOdds, b);
         }
@@ -62,10 +62,11 @@ public class BetPlacer {
 		}
 	}
 
-	protected void acceptCheapOdds(String p2p) {
+	protected void acceptCheapOdds(String p2p, Quote b) {
 		try {
 			this.slugSwapApi.acceptCheapOdds(p2p);
 		} catch (SlugSwaps.Timeout timeout) {
+			this.slugRacingOddsApi.agreeExpensiveOdds(b);
 		}
 	}
 }

@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.teamoptimization.Quote;
+import com.teamoptimization.SlugSwaps;
+
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when; 
 import java.math.BigDecimal;
@@ -20,6 +22,8 @@ public class BetPlacerTests {
 
 	protected BetPlacer betPlacer;
 	
+	protected Quote defaultQuote;
+	
 	
 	protected ISlugRacingOddsApiAdapter slugRacingOddsAdapter = mock(ISlugRacingOddsApiAdapter.class);
 	
@@ -29,7 +33,8 @@ public class BetPlacerTests {
 
 	@Before
 	public void initialize() {
-		when(slugRacingOddsAdapter.getExpensiveOdds(002, "something")).thenReturn(new Quote(new BigDecimal(100), "something"));		
+		defaultQuote = new Quote(new BigDecimal(100), "something");
+		when(slugRacingOddsAdapter.getExpensiveOdds(002, "something")).thenReturn(defaultQuote);		
 		when(timer.TimeOut(1000)).thenReturn(false);
 		betPlacer = new BetPlacer(this.slugRacingOddsAdapter, this.slugSwapApiAdapter, timer);
 	}
@@ -96,7 +101,7 @@ public class BetPlacerTests {
 	}
 	
 	@Test
-	public void testTimeOut() throws Exception {
+	public void testRacingOddsAdapterTimeOut() throws Exception {
 		acceptedId = "somethingrandomid";
 		when(slugSwapApiAdapter.getP2PQuote(002, "something", new BigDecimal(102))).thenReturn(acceptedId);	
 		
@@ -108,4 +113,15 @@ public class BetPlacerTests {
 		verify(slugSwapApiAdapter, never()).acceptCheapOdds(acceptedId);
 		verify(slugRacingOddsAdapter, never()).agreeExpensiveOdds(quote);
 	}
+	
+	@Test
+	public void testSwapApiTimeout()throws Exception {
+		acceptedId = "somethingrandomid";
+		when(slugSwapApiAdapter.getP2PQuote(002, "something", new BigDecimal(102))).thenReturn(acceptedId);
+		doThrow(new SlugSwaps.Timeout()).when(slugSwapApiAdapter).acceptCheapOdds(acceptedId);
+		
+		betPlacer.placeBet(002, "something", new BigDecimal(102));
+		verify(slugRacingOddsAdapter).agreeExpensiveOdds(defaultQuote);
+	}
+	
 }
