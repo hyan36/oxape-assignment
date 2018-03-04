@@ -35,15 +35,27 @@ public class BetPlacer {
         result = this.slugSwapApi.getP2PQuote(slugId, raceName, targetOdds);
         String p2p = result;
         Quote b = this.slugRacingOddsApi.getExpensiveOdds(slugId, raceName);
-        if (p2p != null && targetOdds.compareTo(b.odds) >= 0) {
-            try {
-            	this.slugSwapApi.acceptCheapOdds(p2p);
-            } catch (SlugSwaps.Timeout timeout) {
-            }
+        acceptOdds(targetOdds, p2p, b);
+    }
+
+	protected void acceptOdds(BigDecimal targetOdds, String p2p, Quote b) {
+		if (p2p != null && targetOdds.compareTo(b.odds) >= 0) {
+            acceptCheapOdds(p2p);
         } else {
-            if (b.odds.compareTo(targetOdds) >= 0) {
-            	this.slugRacingOddsApi.agreeExpensiveOdds(b);
-            }
+            acceptExpensiveOdds(targetOdds, b);
         }
-    }	
+	}
+
+	protected void acceptExpensiveOdds(BigDecimal targetOdds, Quote b) {
+		if (b.odds.compareTo(targetOdds) >= 0) {
+			this.slugRacingOddsApi.agreeExpensiveOdds(b);
+		}
+	}
+
+	protected void acceptCheapOdds(String p2p) {
+		try {
+			this.slugSwapApi.acceptCheapOdds(p2p);
+		} catch (SlugSwaps.Timeout timeout) {
+		}
+	}	
 }
