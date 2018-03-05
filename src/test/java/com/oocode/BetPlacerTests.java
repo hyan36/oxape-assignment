@@ -101,7 +101,7 @@ public class BetPlacerTests {
 	}
 	
 	@Test
-	public void testRacingOddsAdapterTimeOut() throws Exception {
+	public void testTimerTimeOut() throws Exception {
 		acceptedId = "somethingrandomid";
 		when(slugSwapApiAdapter.getP2PQuote(002, "something", new BigDecimal(102))).thenReturn(acceptedId);	
 		
@@ -115,7 +115,7 @@ public class BetPlacerTests {
 	}
 	
 	@Test
-	public void testSwapApiTimeout()throws Exception {
+	public void testSwapApiAcceptOddsTimeout()throws Exception {
 		acceptedId = "somethingrandomid";
 		when(slugSwapApiAdapter.getP2PQuote(002, "something", new BigDecimal(102))).thenReturn(acceptedId);
 		doThrow(new SlugSwaps.Timeout()).when(slugSwapApiAdapter).acceptCheapOdds(acceptedId);
