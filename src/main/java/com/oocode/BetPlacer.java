@@ -49,12 +49,12 @@ public class BetPlacer {
 	}
 
 	protected void acceptOdds(BigDecimal targetOdds, String p2p, Quote b) {
-		if (!timer.TimeOut(1000)) {
-			if (p2p != null && targetOdds.compareTo(b.odds) >= 0) {
+		if (p2p != null && targetOdds.compareTo(b.odds) >= 0) {
+			if (!timer.TimeOut(1000)) {
 				acceptCheapOdds(p2p, b);
-			} else {
-				acceptExpensiveOdds(targetOdds, b);
 			}
+		} else {
+			acceptExpensiveOdds(targetOdds, b);
 		}
 	}
 
