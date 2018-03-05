@@ -101,7 +101,7 @@ public class BetPlacerTests {
 	}
 	
 	@Test
-	public void testTimerTimeOut() throws Exception {
+	public void testDoNothingSwapApiGetQuoteTimeoutWithBetterTargetOdds() throws Exception {
 		acceptedId = "somethingrandomid";
 		when(slugSwapApiAdapter.getP2PQuote(002, "something", new BigDecimal(102))).thenReturn(acceptedId);	
 		
@@ -116,7 +116,7 @@ public class BetPlacerTests {
 	}
 	
 	@Test
-	public void testSwapApiAcceptOddsTimeout()throws Exception {
+	public void testCallRacingApiWhenSwapApiAcceptOddsTimeoutWithSameOdds() throws Exception {
 		acceptedId = "somethingrandomid";
 		when(slugSwapApiAdapter.getP2PQuote(002, "something", new BigDecimal(100))).thenReturn(acceptedId);
 		doThrow(new SlugSwaps.Timeout()).when(slugSwapApiAdapter).acceptCheapOdds(acceptedId);
@@ -126,7 +126,17 @@ public class BetPlacerTests {
 	}
 	
 	@Test
-	public void testSwapApiGetQuoteTimeout()throws Exception {
+	public void testDoNothingSwapApiAcceptOddsTimeouWithTargetOdds() throws Exception {
+		acceptedId = "somethingrandomid";
+		when(slugSwapApiAdapter.getP2PQuote(002, "something", new BigDecimal(100))).thenReturn(acceptedId);
+		doThrow(new SlugSwaps.Timeout()).when(slugSwapApiAdapter).acceptCheapOdds(acceptedId);
+		
+		betPlacer.placeBet(002, "something", new BigDecimal(102));
+		verify(slugRacingOddsAdapter, never()).agreeExpensiveOdds(defaultQuote);
+	}
+	
+	@Test
+	public void testSwapApiGetQuoteTimeoutWhenSameOdds()throws Exception {
 		acceptedId = "somethingrandomid";
 		when(slugSwapApiAdapter.getP2PQuote(002, "something", new BigDecimal(102))).thenReturn(acceptedId);	
 		

@@ -59,9 +59,7 @@ public class BetPlacer {
 				acceptExpensiveOdds(targetOdds, b);
 			}
 		} catch (SlugSwaps.Timeout timeout) {
-			if(b.odds.equals(targetOdds)) {
-				this.slugRacingOddsApi.agreeExpensiveOdds(b);
-			}
+			this.slugRacingOddsApi.agreeExpensiveOdds(b);
 		}
 	}
 
