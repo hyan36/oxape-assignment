@@ -110,6 +110,7 @@ public class BetPlacerTests {
 		when(slugRacingOddsAdapter.getExpensiveOdds(002, "something")).thenReturn(quote);
 		
 		when(timer.TimeOut(1000)).thenReturn(true);		
+		betPlacer.placeBet(002, "something", new BigDecimal(103));
 		verify(slugSwapApiAdapter, never()).acceptCheapOdds(acceptedId);
 		verify(slugRacingOddsAdapter, never()).agreeExpensiveOdds(quote);
 	}
@@ -122,6 +123,22 @@ public class BetPlacerTests {
 		
 		betPlacer.placeBet(002, "something", new BigDecimal(100));
 		verify(slugRacingOddsAdapter).agreeExpensiveOdds(defaultQuote);
+	}
+	
+	@Test
+	public void testSwapApiGetQuoteTimeout()throws Exception {
+		acceptedId = "somethingrandomid";
+		when(slugSwapApiAdapter.getP2PQuote(002, "something", new BigDecimal(102))).thenReturn(acceptedId);	
+		
+		expensiveOdds = 102;
+		Quote quote = new Quote(new BigDecimal(expensiveOdds), "something");
+		when(slugRacingOddsAdapter.getExpensiveOdds(002, "something")).thenReturn(quote);
+		
+		when(timer.TimeOut(1000)).thenReturn(true);		
+		
+		betPlacer.placeBet(002, "something", new BigDecimal(102));
+		verify(slugSwapApiAdapter, never()).acceptCheapOdds(acceptedId);
+		verify(slugRacingOddsAdapter).agreeExpensiveOdds(quote);
 	}
 	
 }
