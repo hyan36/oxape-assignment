@@ -117,10 +117,10 @@ public class BetPlacerTests {
 	@Test
 	public void testSwapApiAcceptOddsTimeout()throws Exception {
 		acceptedId = "somethingrandomid";
-		when(slugSwapApiAdapter.getP2PQuote(002, "something", new BigDecimal(102))).thenReturn(acceptedId);
+		when(slugSwapApiAdapter.getP2PQuote(002, "something", new BigDecimal(100))).thenReturn(acceptedId);
 		doThrow(new SlugSwaps.Timeout()).when(slugSwapApiAdapter).acceptCheapOdds(acceptedId);
 		
-		betPlacer.placeBet(002, "something", new BigDecimal(102));
+		betPlacer.placeBet(002, "something", new BigDecimal(100));
 		verify(slugRacingOddsAdapter).agreeExpensiveOdds(defaultQuote);
 	}
 	

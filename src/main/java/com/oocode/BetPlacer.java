@@ -49,12 +49,19 @@ public class BetPlacer {
 	}
 
 	protected void acceptOdds(BigDecimal targetOdds, String p2p, Quote b) {
-		if (p2p != null && targetOdds.compareTo(b.odds) >= 0) {
-			if (!timer.TimeOut(1000)) {
+		try {
+			if (p2p != null && targetOdds.compareTo(b.odds) >= 0) {
+				if (timer.TimeOut(1000)) {
+					throw new SlugSwaps.Timeout();
+				}
 				acceptCheapOdds(p2p, b);
+			} else {
+				acceptExpensiveOdds(targetOdds, b);
 			}
-		} else {
-			acceptExpensiveOdds(targetOdds, b);
+		} catch (SlugSwaps.Timeout timeout) {
+			if(b.odds.equals(targetOdds)) {
+				this.slugRacingOddsApi.agreeExpensiveOdds(b);
+			}
 		}
 	}
 
@@ -64,11 +71,7 @@ public class BetPlacer {
 		}
 	}
 
-	protected void acceptCheapOdds(String p2p, Quote b) {
-		try {
-			this.slugSwapApi.acceptCheapOdds(p2p);
-		} catch (SlugSwaps.Timeout timeout) {
-			this.slugRacingOddsApi.agreeExpensiveOdds(b);
-		}
+	protected void acceptCheapOdds(String p2p, Quote b) throws SlugSwaps.Timeout{		
+		this.slugSwapApi.acceptCheapOdds(p2p);
 	}
 }
